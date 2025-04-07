@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Movie List', ~{::section})}">
+<body>
+<section>
+    <h2 class="mb-4" th:text="${title}">Movie List</h2>
+
+    <!-- No Results Message -->
+    <div class="alert alert-info" th:if="${movies.empty}">
+        <p th:if="${searchQuery != null}">No results found for "<span th:text="${searchQuery}"></span>".</p>
+        <p th:unless="${searchQuery != null}">No movies available at the moment.</p>
+    </div>
+
+    <!-- Movie Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col" th:each="movie : ${movies}">
+            <div class="card movie-card h-100 shadow">
+                <img th:if="${movie.posterPath != null}" th:src="${movie.fullPosterPath}" class="card-img-top movie-poster" alt="Movie Poster">
+                <div th:unless="${movie.posterPath != null}" class="card-img-top movie-poster bg-secondary d-flex justify-content-center align-items-center">
+                    <span class="text-white">No poster available</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
+                    <p class="card-text text-muted" th:if="${movie.releaseDateStr != null}">
+                        <small th:text="${#strings.substring(movie.releaseDateStr, 0, 4)}">2023</small>
+                        <span class="ms-2 badge bg-warning text-dark" th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)} + '★'">7.5★</span>
+                    </p>
+                    <p class="card-text" th:text="${#strings.length(movie.overview) > 100 ? #strings.substring(movie.overview, 0, 100) + '...' : movie.overview}">
+                        Movie description...
+                    </p>
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/movie/{id}(id=${movie.id})}" class="btn btn-primary">View Details</a>
+                        <form th:action="@{/favorites/add/{id}(id=${movie.id})}" method="post">
+                            <button type="submit" class="btn btn-outline-warning">
+                                <i class="bi bi-star-fill"></i> Favorite
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
