@@ -30,9 +30,19 @@
                     </p>
                     <div class="d-flex justify-content-between">
                         <a th:href="@{/movie/{id}(id=${movie.id})}" class="btn btn-primary">View Details</a>
-                        <form th:action="@{/favorites/add/{id}(id=${movie.id})}" method="post">
+
+                        <!-- Add to Favorites button -->
+                        <form th:if="${!favoriteIds.contains(movie.id)}" th:action="@{/favorites/add/{id}(id=${movie.id})}" method="post">
                             <button type="submit" class="btn btn-outline-warning">
-                                <i class="bi bi-star-fill"></i> Favorite
+                                <i class="bi bi-star"></i> Favorite
+                            </button>
+                        </form>
+
+                        <!-- Remove from Favorites button -->
+                        <form th:if="${favoriteIds.contains(movie.id)}" th:action="@{/favorites/remove/{id}(id=${movie.id})}" method="post">
+                            <input type="hidden" name="redirect" th:value="${searchQuery != null ? 'search:' + searchQuery : title == 'Top Rated Movies' ? 'topRated' : 'home'}">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-star-fill"></i> Unfavorite
                             </button>
                         </form>
                     </div>

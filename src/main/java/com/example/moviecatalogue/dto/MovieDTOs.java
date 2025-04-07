@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MovieDTOs {
 
@@ -68,11 +69,46 @@ public class MovieDTOs {
         @JsonProperty("poster_path")
         private String posterPath;
 
+        @JsonProperty("backdrop_path")
+        private String backdropPath;
+
         @JsonProperty("release_date")
         private String releaseDateStr;
 
         @JsonProperty("vote_average")
         private Double voteAverage;
+
+        @JsonProperty("vote_count")
+        private Integer voteCount;
+
+        private Integer runtime;
+
+        private String tagline;
+
+        @JsonProperty("genres")
+        private List<Genre> genres;
+
+        // Inner class for genre
+        public static class Genre {
+            private Long id;
+            private String name;
+
+            public Long getId() {
+                return id;
+            }
+
+            public void setId(Long id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+        }
 
         // Getters and Setters
         public Long getId() {
@@ -107,6 +143,14 @@ public class MovieDTOs {
             this.posterPath = posterPath;
         }
 
+        public String getBackdropPath() {
+            return backdropPath;
+        }
+
+        public void setBackdropPath(String backdropPath) {
+            this.backdropPath = backdropPath;
+        }
+
         public String getReleaseDateStr() {
             return releaseDateStr;
         }
@@ -123,9 +167,62 @@ public class MovieDTOs {
             this.voteAverage = voteAverage;
         }
 
+        public Integer getVoteCount() {
+            return voteCount;
+        }
+
+        public void setVoteCount(Integer voteCount) {
+            this.voteCount = voteCount;
+        }
+
+        public Integer getRuntime() {
+            return runtime;
+        }
+
+        public void setRuntime(Integer runtime) {
+            this.runtime = runtime;
+        }
+
+        public String getTagline() {
+            return tagline;
+        }
+
+        public void setTagline(String tagline) {
+            this.tagline = tagline;
+        }
+
+        public String getGenres() {
+            return getGenresAsString();
+        }
+        public void setGenres(List<Genre> genres) {
+            this.genres = genres;
+        }
+
         // Helper method to get the full poster URL
         public String getFullPosterPath() {
             return posterPath != null ? "https://image.tmdb.org/t/p/w500" + posterPath : null;
+        }
+
+        // Helper method to get the full backdrop URL
+        public String getFullBackdropPath() {
+            return backdropPath != null ? "https://image.tmdb.org/t/p/original" + backdropPath : null;
+        }
+
+        // Helper method to get genres as a comma-separated string
+        public String getGenresAsString() {
+            if (genres == null || genres.isEmpty()) {
+                return null;
+            }
+            return genres.stream()
+                    .map(Genre::getName)
+                    .collect(Collectors.joining(", "));
+        }
+
+        public String getFormattedRuntime() {
+            if (runtime == null) return null;
+            int hours = runtime / 60;
+            int minutes = runtime % 60;
+            return hours > 0 ? hours + "h " + minutes + "m" : minutes + "m";
         }
 
         // Convert DTO to entity
@@ -144,8 +241,13 @@ public class MovieDTOs {
                     title,
                     overview,
                     posterPath,
+                    backdropPath,
                     releaseDate,
-                    voteAverage
+                    voteAverage,
+                    voteCount,
+                    runtime,
+                    tagline,
+                    getGenresAsString()
             );
         }
     }

@@ -9,6 +9,17 @@
         </a>
     </div>
 
+    <!-- Backdrop Image -->
+    <div class="backdrop-container mb-4" th:if="${movie.backdropPath != null}">
+        <img th:src="${movie.fullBackdropPath}" class="backdrop-image" alt="Backdrop">
+        <div class="backdrop-overlay">
+            <div class="backdrop-content">
+                <h1 th:text="${movie.title}" class="display-4">Movie Title</h1>
+                <p class="lead" th:if="${movie.tagline != null}" th:text="${movie.tagline}">Tagline</p>
+            </div>
+        </div>
+    </div>
+
     <div class="card shadow">
         <div class="row g-0">
             <!-- Movie Poster -->
@@ -22,14 +33,35 @@
             <!-- Movie Details -->
             <div class="col-md-8">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <h2 class="card-title" th:text="${movie.title}">Movie Title</h2>
-                        <span class="badge bg-warning text-dark fs-5" th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)} + '★'">7.5★</span>
+                    <!-- Only show if no backdrop -->
+                    <div th:unless="${movie.backdropPath != null}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h2 class="card-title" th:text="${movie.title}">Movie Title</h2>
+                        </div>
+                        <p class="text-muted fst-italic" th:if="${movie.tagline != null}" th:text="${movie.tagline}">Tagline</p>
                     </div>
 
-                    <p class="text-muted" th:if="${movie.releaseDateStr != null}">
-                        Release Date: <span th:text="${movie.releaseDateStr}">2023-01-01</span>
-                    </p>
+                    <!-- Rating badge -->
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-warning text-dark fs-5 me-2" th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)} + '★'">7.5★</span>
+                        <small class="text-muted" th:if="${movie.voteCount != null}" th:text="'(' + ${movie.voteCount} + ' votes)'">votes</small>
+                    </div>
+
+                    <!-- Movie metadata -->
+                    <div class="movie-detail-info">
+                        <div th:if="${movie.releaseDateStr != null}" class="mb-1">
+                            <i class="bi bi-calendar-event"></i>
+                            <span th:text="${movie.releaseDateStr}">2023-01-01</span>
+                        </div>
+                        <div th:if="${movie.runtime != null}" class="mb-1">
+                            <i class="bi bi-clock"></i>
+                            <span th:text="${movie.formattedRuntime}">2h 15m</span>
+                        </div>
+                        <div th:if="${movie.genres != null}" class="mb-1">
+                            <i class="bi bi-tag"></i>
+                            <span th:text="${movie.genres}">Action, Adventure</span>
+                        </div>
+                    </div>
 
                     <h5 class="mt-4">Overview</h5>
                     <p class="card-text" th:text="${movie.overview}">Movie description...</p>
